@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Chatroom</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <style media="screen">
+    #messages{
+      height: 300px;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="row">
+    <div class="col-md-6 col-offset-md-3 col-sm-12">
+      <h1 class="text-center">
+        Networks Chatroom
+      </h1>
+      <div id="message-status"></div>
+      <div id="chat-box">
+        <input type="text" name="name" value="" id="chat-name" class="form-control" placeholder="Enter Name">
+        <div class="card">
+          <div id="messages" class="card-block">
+            <ul>
+            </ul>
+          </div>
+        </div>
+        <br>
+        <input type="text"id="chat-message" name="message" placeholder="Enter message"class="form-control">
+      </div>
+    </div>
+  </div>
+</div>
+<script
+src="https://code.jquery.com/jquery-3.3.1.min.js"
+integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js
+"></script>
+<script>
+$(document).ready(()=>{
+  var msg = $('#chat-message');
+  var name = $('#chat-name');
+  var btnDelete = $('#btn-delete');
+  var messages = $('#messages ul');
+  var messageStatus = $('#message-status');
+  //connect to sockets
+  var socket = io.connect('http://127.0.0.1:4000');
+
+  if (socket != undefined) {
+    console.log('Connected to socket server....');
+    socket.on('messages',(data)=>{
+      console.log(data);
+      //creates the loop to output the messages to chatbox
+      if (data.length) {
+        for (var i = 0; i < data.length; i++) {
+          console.log(data[i]);
+          messages.append('<li>'+data[i].name+':'+data[i].message+'</li>');
+        }
+      }
+    });
+    msg.on("keydown",(e)=>{
+      if ( e.keyCode == 13 ) {
+      socket.emit('input',{
+        name:name.val(),
+        message:msg.val()
+      });
+      console.log("Message:"+msg.val()+" Name: " +name.val());
+    }
+  });
+  }
+})
+  // $(document).ready(function () {
+  //   //var socket = io.connect();
+  //   // var msg = $('#chat-message');
+  //   // var name = $('#chat-name');
+  //   // var btnDelete = $('#btn-delete');
+  //   // var messages = $('#messages ul');
+  //   // var messageStatus = $('#message-status');
+  //   // //connect to sockets
+  //   var socket = io.connect('http://127.0.0.1:4000');
+  //   //check connection
+  //   if (socket != undefined) {
+  //     console.log('Connected to socket server....');
+  //     socket.on('messages',(data)=>{
+  //       console.log(data);
+  //       //creates the loop to output the messages to chatbox
+  //       if (data.length) {
+  //         for (var i = 0; i < data.length; i++) {
+  //           console.log(data[i]);
+  //           messages.append("'<li>'+data[i].name+':'+data[i].message+'</li>'");
+  //           msg.on('keydown',function(e) {
+  //           if ( e.keyCode == 13 ) {  // detect the enter key
+  //               // socket.emit('input',{
+  //               //   name:name.val(),
+  //               //   message:message.val()
+  //               // });
+  //               console.log("Message:"+message.val()+" Name: " +name.val());
+  //           }
+  //
+
+
+</script>
+</body>
+</html>
